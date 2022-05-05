@@ -2,6 +2,7 @@
 
 #include <mutex>  // NOLINT
 #include <vector>
+#include <cassert>
 
 namespace skiplist {
 

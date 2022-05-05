@@ -6,8 +6,9 @@ TODO
 - [ ] 并发模块。Reader Writer Latch，支持并发读。
 - [ ] 测试模块。使用GTest对源码测试，包括正确性，并发性，高效性。
 - [ ] 性能测试。每秒的读写次数，顺序读写，随机读写等等。
+- [ ] 迭代器。
 
-<a href="https://mp.weixin.qq.com/s/RsdcQ9umo09R6cfnwXZlrQ"><img src="https://img.shields.io/badge/PDF下载-代码随想录-blueviolet" alt=""></a>  <a href="https://mp.weixin.qq.com/s/b66DFkOp8OOxdZC_xLZxfw"><img src="https://img.shields.io/badge/刷题-微信群-green" alt=""></a>  <a href="https://space.bilibili.com/525438321"><img src="https://img.shields.io/badge/B站-代码随想录-orange" alt=""></a><a href="https://mp.weixin.qq.com/s/QVF6upVMSbgvZy8lHZS3CQ"><img src="https://img.shields.io/badge/知识星球-代码随想录-blue" alt=""></a>
+<img src="https://img.shields.io/badge/SkipList-Memory-orange" alt=""><img src="https://img.shields.io/badge/Test-Passed-blue" alt=""></a>
 
 ## 引言
 
