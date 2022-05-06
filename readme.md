@@ -1,3 +1,26 @@
+ ```
+ Insert given key and value in skip list 
+ return 1 means element exists  
+ return 0 means insert successfully
+ 
+                           +------------+
+                           |  insert 50 |
+                           +------------+
+level 4     +-->1                                                      100
+                 |
+                 |                      insert +----+
+level 3         1+-------->10+--------------> | 50 |          70       100
+                                               |    |
+                                               |    |
+level 2         1          10         30      | 50 |          70       100
+                                               |    |
+                                               |    |
+level 1         1    4     10         30      | 50 |          70       100
+                                               |    |
+                                               |    |
+level 0         1    4   9 10         30   40  | 50 |  60      70       100
+                                               +----+
+```
 TODO
 
 - [ ] 编码格式。按照Google format编写，CMake，Format.

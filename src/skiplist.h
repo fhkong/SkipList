@@ -1,8 +1,8 @@
 #pragma once
 
+#include <cassert>
 #include <mutex>  // NOLINT
 #include <vector>
-#include <cassert>
 
 namespace skiplist {
 
@@ -18,6 +18,7 @@ class SkipList {
   bool Remove(const KeyType &key);
   bool Lookup(const KeyType &key, std::vector<ValueType> *result);
 
+  size_t Size() { return size_; }
   void Print();
   void InsertFromFile(const std::string &file_name);
 
@@ -49,12 +50,42 @@ class SkipList {
   SkipListNode *CreateNode(const KeyType &key, const ValueType &value, int height);
   size_t RandomHeight();
 
+  /************** Iterator Unit **********************/
+ private:
+  class Iterator {
+    using KVPAIR = std::pair<KeyType, ValueType>;
+
+   public:
+    Iterator(SkipListNode *node) { cur = node; }
+
+    KVPAIR operator*() {
+      assert(cur != nullptr);
+      return KVPAIR{cur->key_, cur->value_};
+    }
+
+    Iterator &operator++() {
+      assert(cur != nullptr);
+      this->cur = this->cur->forward_[0];
+      return *this;
+    }
+    bool operator==(const Iterator &itr) const { return cur == itr.cur; }
+    bool operator!=(const Iterator &itr) const { return cur != itr.cur; }
+    ~Iterator() = default;
+
+   private:
+    SkipListNode *cur;
+  };
+
+ public:
+  Iterator begin();
+  Iterator end();
+
  private:
   std::mutex mtx_;
   KeyComparator comparator_;
   size_t max_height_;
-  size_t cur_height_;
   size_t rnd_;
+  size_t size_;
   SkipListNode *head_;
 };
 

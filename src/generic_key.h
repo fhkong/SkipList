@@ -1,6 +1,8 @@
 #pragma once
 
+#include <cstdint>
 #include <cstring>
+#include <iostream>
 
 namespace skiplist {
 template <size_t KeySize>

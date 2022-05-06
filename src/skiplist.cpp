@@ -10,7 +10,7 @@
 namespace skiplist {
 SKIPLIST_TEMPLATE_ARGUMENTS
 SKIPLIST_TYPE::SkipList(const KeyComparator &comparator, size_t max_height, size_t rnd)
-    : comparator_(comparator), max_height_(max_height), cur_height_(0), rnd_(rnd) {
+    : comparator_(comparator), max_height_(max_height), rnd_(rnd), size_(0) {
   LOG_INFO("Construct SkipList with max_height: %lu and random seed: %lu", max_height, rnd);
   srand(rnd_);  // Set random seed for random function
   // Invalid key, value to head node
@@ -43,9 +43,13 @@ bool SKIPLIST_TYPE::Lookup(const KeyType &key, std::vector<ValueType> *result) {
 
 SKIPLIST_TEMPLATE_ARGUMENTS
 bool SKIPLIST_TYPE::Insert(const KeyType &key, const ValueType &value) {
+  std::vector<ValueType> result; 
+  bool isfind = Lookup(key, &result);
   std::lock_guard<std::mutex> _(mtx_);
+  if (isfind) {
+    return false;
+  }
   size_t height = RandomHeight();
-  cur_height_ = std::max(cur_height_, height);
   LOG_INFO("Insert: <%ld, %ld> with height: %lu", key.ToInteger(), value, height);
   SkipListNode *new_node = new SkipListNode(key, value, height);
 
@@ -57,16 +61,13 @@ bool SKIPLIST_TYPE::Insert(const KeyType &key, const ValueType &value) {
       p = p->forward_[level];
       cur = cur->forward_[level];
     }
-    if (p && comparator_(p->key_, key) == 0) {
-      LOG_INFO("The key is already exists.");
-      return false;
-    }
     if (level < static_cast<int>(height)) {
       new_node->forward_[level] = cur->forward_[level];
       cur->forward_[level] = new_node;
     }
     level--;
   }
+  size_ += 1;
   return true;
 }
 
@@ -91,10 +92,11 @@ bool SKIPLIST_TYPE::Remove(const KeyType &key) {
     level--;
   }
   if (delete_node == nullptr) {
-    LOG_INFO("The key is not exists.");
+    LOG_WARN("The key is not exists.");
     return false;
   }
   delete delete_node;
+  size_ -= 1;
   return true;
 }
 
@@ -122,7 +124,7 @@ size_t SKIPLIST_TYPE::RandomHeight() {
 
 SKIPLIST_TEMPLATE_ARGUMENTS
 void SKIPLIST_TYPE::Print() {
-  for (int h = cur_height_ - 1; h >= 0; --h) {
+  for (int h = max_height_ - 1; h >= 0; --h) {
     auto p = head_->forward_[h];
     std::cout << "Level-" << h << ": ";
     while (p != nullptr) {
@@ -149,6 +151,30 @@ void SKIPLIST_TYPE::InsertFromFile(const std::string &file_name) {
     index_key.SetFromInteger(key);
     Insert(index_key, value);
   }
+}
+
+////////////////// Iterator /////////////////
+SKIPLIST_TEMPLATE_ARGUMENTS
+typename SKIPLIST_TYPE::Iterator SKIPLIST_TYPE::begin() {
+  LOG_INFO("Iterator begin");
+  return Iterator{head_->forward_[0]};
+}
+
+SKIPLIST_TEMPLATE_ARGUMENTS
+typename SKIPLIST_TYPE::Iterator SKIPLIST_TYPE::end() {
+  LOG_INFO("Iterator end");
+  // int level = max_height_ - 1;
+  // auto cur = head_;
+  // while (level >= 0) {
+  //   auto p = cur->forward_[level];
+  //   while (p) {
+  //     p = p->forward_[level];
+  //     cur = cur->forward_[level];
+  //   }
+  //   level--;
+  // }
+  // return Iterator{cur->forward_[0]};
+  return Iterator{nullptr};
 }
 
 SKIPLIST_TEMPLATE_ARGUMENTS
