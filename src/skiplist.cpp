@@ -2,9 +2,8 @@
 #include <fstream>
 #include <iostream>
 #include <random>
+#include <thread>
 
-#include "generic_key.h"
-#include "logger.h"
 #include "skiplist.h"
 
 namespace skiplist {
@@ -43,18 +42,29 @@ bool SKIPLIST_TYPE::Lookup(const KeyType &key, std::vector<ValueType> *result) {
 
 SKIPLIST_TEMPLATE_ARGUMENTS
 bool SKIPLIST_TYPE::Insert(const KeyType &key, const ValueType &value) {
-  std::vector<ValueType> result; 
-  bool isfind = Lookup(key, &result);
   std::lock_guard<std::mutex> _(mtx_);
-  if (isfind) {
-    return false;
-  }
-  size_t height = RandomHeight();
-  LOG_INFO("Insert: <%ld, %ld> with height: %lu", key.ToInteger(), value, height);
-  SkipListNode *new_node = new SkipListNode(key, value, height);
-
+  // firstly, we will lookup the skiplist for the key to be inserted.
   int level = max_height_ - 1;
   auto cur = head_;
+  while (level >= 0) {
+    auto p = cur->forward_[level];
+    while (p && comparator_(p->key_, key) < 0) {
+      p = p->forward_[level];
+      cur = cur->forward_[level];
+    }
+    if (p && comparator_(p->key_, key) == 0) {
+      LOG_WARN("The key: %lu has already existed!", key.ToInteger());
+      return false;
+    }
+    level--;
+  }
+
+  size_t height = RandomHeight();
+  LOG_INFO("ThreadID: %lu, Insert: <%ld, %ld> with height: %lu", std::hash<std::thread::id>{}(std::this_thread::get_id()), key.ToInteger(), value, height);
+  SkipListNode *new_node = new SkipListNode(key, value, height);
+
+  level = max_height_ - 1;
+  cur = head_;
   while (level >= 0) {
     auto p = cur->forward_[level];
     while (p && comparator_(p->key_, key) < 0) {

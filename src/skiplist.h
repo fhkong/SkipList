@@ -4,6 +4,9 @@
 #include <mutex>  // NOLINT
 #include <vector>
 
+#include "generic_key.h"
+#include "logger.h"
+
 namespace skiplist {
 
 #define SKIPLIST_TEMPLATE_ARGUMENTS template <typename KeyType, typename ValueType, typename KeyComparator>
