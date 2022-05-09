@@ -20,7 +20,8 @@ SKIPLIST_TYPE::SkipList(const KeyComparator &comparator, size_t max_height, size
 
 SKIPLIST_TEMPLATE_ARGUMENTS
 bool SKIPLIST_TYPE::Lookup(const KeyType &key, std::vector<ValueType> *result) {
-  std::lock_guard<std::mutex> _(mtx_);
+  // std::lock_guard<std::mutex> _(mtx_);
+  rwlatch_.RLock();
   LOG_INFO("Lookup: <%ld>", key.ToInteger());
 
   int level = max_height_ - 1;
@@ -33,16 +34,19 @@ bool SKIPLIST_TYPE::Lookup(const KeyType &key, std::vector<ValueType> *result) {
     }
     if (p && comparator_(p->key_, key) == 0) {
       result->push_back(p->value_);
+      rwlatch_.RUnLock();
       return true;
     }
     level--;
   }
+  rwlatch_.RUnLock();
   return false;
 }
 
 SKIPLIST_TEMPLATE_ARGUMENTS
 bool SKIPLIST_TYPE::Insert(const KeyType &key, const ValueType &value) {
-  std::lock_guard<std::mutex> _(mtx_);
+  // std::lock_guard<std::mutex> _(mtx_);
+  rwlatch_.WLock();
   // firstly, we will lookup the skiplist for the key to be inserted.
   int level = max_height_ - 1;
   auto cur = head_;
@@ -54,6 +58,7 @@ bool SKIPLIST_TYPE::Insert(const KeyType &key, const ValueType &value) {
     }
     if (p && comparator_(p->key_, key) == 0) {
       LOG_WARN("The key: %lu has already existed!", key.ToInteger());
+      rwlatch_.WUnLock();
       return false;
     }
     level--;
@@ -79,12 +84,14 @@ bool SKIPLIST_TYPE::Insert(const KeyType &key, const ValueType &value) {
     level--;
   }
   size_ += 1;
+  rwlatch_.WUnLock();
   return true;
 }
 
 SKIPLIST_TEMPLATE_ARGUMENTS
 bool SKIPLIST_TYPE::Remove(const KeyType &key) {
-  std::lock_guard<std::mutex> _(mtx_);
+  // std::lock_guard<std::mutex> _(mtx_);
+  rwlatch_.WLock();
   LOG_INFO("Remove: %ld", key.ToInteger());
 
   int level = max_height_ - 1;
@@ -104,10 +111,12 @@ bool SKIPLIST_TYPE::Remove(const KeyType &key) {
   }
   if (delete_node == nullptr) {
     LOG_WARN("The key is not exists.");
+    rwlatch_.WUnLock();
     return false;
   }
   delete delete_node;
   size_ -= 1;
+  rwlatch_.WUnLock();
   return true;
 }
 

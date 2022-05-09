@@ -6,6 +6,7 @@
 
 #include "generic_key.h"
 #include "logger.h"
+#include "rwlatch.h"
 
 namespace skiplist {
 
@@ -85,12 +86,13 @@ class SkipList {
   Iterator end();
 
  private:
-  std::mutex mtx_;
+  // std::mutex mtx_;
   KeyComparator comparator_;
   size_t max_height_;
   size_t branching_;
   size_t rnd_;
   size_t size_;
+  ReaderWriterLatch rwlatch_;
   SkipListNode *head_;
 };
 

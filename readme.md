@@ -75,15 +75,14 @@ SkipList中需要控制的超参数主要有：
 2. 在`skiplist.cpp`文件中最后一行加入`template class SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>>;`来预定义。
 
 
-
-
 **TODO**
 
 - [x] 编码格式。遵循Google C++ Style编写
 - [x] 代码抽象。将Key, Value抽象出来, 支持多种类型
-- [ ] 并发模块。Reader Writer Latch, 支持并发读。
+- [x] 并发模块。Reader Writer Latch, 支持并发读。
 - [x] 测试模块。使用GTest对源码测试，包括正确, 并发, 性能
 - [x] 迭代器。 能够使用迭代器访问SkipList,    `for (auto iter : skiplist)`
+- [ ] 内存管理。涉及到内存的分配，C++最头疼的是需要程序员自行管理内存。
 
 
 
