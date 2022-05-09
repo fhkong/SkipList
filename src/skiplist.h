@@ -15,7 +15,8 @@ namespace skiplist {
 SKIPLIST_TEMPLATE_ARGUMENTS
 class SkipList {
  public:
-  explicit SkipList(const KeyComparator &comparator, size_t max_height = 5, size_t rnd = 0xdeadbeef);
+  explicit SkipList(const KeyComparator &comparator, size_t max_height = 5, size_t branching = 2,
+                    size_t rnd = 0xdeadbeef);
 
   bool Insert(const KeyType &key, const ValueType &value);
   bool Remove(const KeyType &key);
@@ -87,6 +88,7 @@ class SkipList {
   std::mutex mtx_;
   KeyComparator comparator_;
   size_t max_height_;
+  size_t branching_;
   size_t rnd_;
   size_t size_;
   SkipListNode *head_;

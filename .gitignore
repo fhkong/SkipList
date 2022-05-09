@@ -72,7 +72,6 @@ build/
 *.lo
 *.la
 *~
-*.pdf
 *.swp
 a.out
 

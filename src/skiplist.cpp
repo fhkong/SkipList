@@ -8,8 +8,8 @@
 
 namespace skiplist {
 SKIPLIST_TEMPLATE_ARGUMENTS
-SKIPLIST_TYPE::SkipList(const KeyComparator &comparator, size_t max_height, size_t rnd)
-    : comparator_(comparator), max_height_(max_height), rnd_(rnd), size_(0) {
+SKIPLIST_TYPE::SkipList(const KeyComparator &comparator, size_t max_height, size_t branching, size_t rnd)
+    : comparator_(comparator), max_height_(max_height), branching_(branching), rnd_(rnd), size_(0) {
   LOG_INFO("Construct SkipList with max_height: %lu and random seed: %lu", max_height, rnd);
   srand(rnd_);  // Set random seed for random function
   // Invalid key, value to head node
@@ -123,9 +123,8 @@ typename SKIPLIST_TYPE::SkipListNode *SKIPLIST_TYPE::CreateNode(const KeyType &k
 SKIPLIST_TEMPLATE_ARGUMENTS
 size_t SKIPLIST_TYPE::RandomHeight() {
   // Increase height with probablility 1 in kBranching
-  static const size_t kBranching = 2;
   size_t height = 1;
-  while (height < max_height_ && (size_t)rand() < (RAND_MAX / kBranching)) {
+  while (height < max_height_ && (size_t)rand() < (RAND_MAX / branching_)) {
     height += 1;
   }
   assert(height <= max_height_);
