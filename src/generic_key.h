@@ -39,7 +39,7 @@ class GenericValue {
     return os;
   }
 
-  bool operator==(const GenericValue& value) const {return memcmp(data_, value.data_, KeySize) == 0;}
+  bool operator==(const GenericValue &value) const { return memcmp(data_, value.data_, KeySize) == 0; }
 
  private:
   char data_[KeySize];

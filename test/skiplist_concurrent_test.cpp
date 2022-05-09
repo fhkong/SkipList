@@ -23,14 +23,14 @@ void LaunchParallelTest(int num_threads, Args &&... args) {
 }
 // must use const std::vector<int64_t>& keys, can't ignore the const keywords. Otherwise, this will be error at creating
 // thread;
-void InsertHelper(SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> *skiplist, const std::vector<int64_t> &keys,
-                  __attribute__((unused)) int thread_iter = 0) {
+void InsertHelper(SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> *skiplist,
+                  const std::vector<int64_t> &keys, __attribute__((unused)) int thread_iter = 0) {
   GenericKey<8> index_key;
   // GenericValue<8> index_value;
   GenericValue<8> index_value;
   for (auto key : keys) {
     index_key.SetFromInteger(key);
-    index_value.SetFromInteger(key) ;
+    index_value.SetFromInteger(key);
     skiplist->Insert(index_key, index_value);
   }
 }
@@ -47,8 +47,8 @@ void InsertSplitHelper(SkipList<GenericKey<8>, GenericValue<8>, GenericComparato
   }
 }
 
-void DeleteHelper(SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> *skiplist, const std::vector<int64_t> &keys,
-                  __attribute__((unused)) int thread_iter = 0) {
+void DeleteHelper(SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> *skiplist,
+                  const std::vector<int64_t> &keys, __attribute__((unused)) int thread_iter = 0) {
   GenericKey<8> index_key;
   for (const auto &key : keys) {
     index_key.SetFromInteger(key);
@@ -67,8 +67,8 @@ void DeleteSplitHelper(SkipList<GenericKey<8>, GenericValue<8>, GenericComparato
   }
 }
 
-void LookupHelper(SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> *skiplist, const std::vector<int64_t> &keys,
-                  __attribute__((unused)) int thread_iter = 0) {
+void LookupHelper(SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> *skiplist,
+                  const std::vector<int64_t> &keys, __attribute__((unused)) int thread_iter = 0) {
   GenericKey<8> index_key;
   GenericValue<8> index_value;
   std::vector<GenericValue<8>> result;
@@ -90,7 +90,7 @@ void LookupSplitHelper(SkipList<GenericKey<8>, GenericValue<8>, GenericComparato
   for (auto key : keys) {
     if (key % thread_num == thread_iter) {
       index_key.SetFromInteger(key);
-      index_value.SetFromInteger(key) ;
+      index_value.SetFromInteger(key);
       skiplist->Lookup(index_key, &result);
       EXPECT_EQ(result.size(), 1);
       EXPECT_EQ(result[0], index_value);

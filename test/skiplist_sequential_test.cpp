@@ -23,7 +23,7 @@ TEST(SkipListTest, InsertTest) {
   SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> skiplist(comparator, max_height);
 
   GenericKey<8> index_key;
-  GenericValue<8>  index_value;
+  GenericValue<8> index_value;
   std::vector<int64_t> keys;
   int scala_keys = 1000;
   for (int i = 1; i <= scala_keys; i++) {
