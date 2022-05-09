@@ -156,11 +156,13 @@ void SKIPLIST_TYPE::InsertFromFile(const std::string &file_name) {
   int64_t key;
   int64_t value;
   KeyType index_key;
+  ValueType index_value;
   while (input) {
     input >> key >> value;
     std::cout << "<" << key << "," << value << ">" << std::endl;
     index_key.SetFromInteger(key);
-    Insert(index_key, value);
+    index_value.SetFromInteger(value);
+    Insert(index_key, index_value);
   }
 }
 
@@ -200,5 +202,5 @@ SKIPLIST_TYPE::~SkipList() {
   }
 }
 
-template class SkipList<GenericKey<8>, int64_t, GenericComparator<8>>;
+template class SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>>;
 }  // namespace skiplist

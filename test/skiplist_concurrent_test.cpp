@@ -9,7 +9,7 @@
 
 namespace skiplist {
 
-static const int ITER_NUM = 100;
+static const int ITER_NUM = 10;
 
 template <typename... Args>
 void LaunchParallelTest(int num_threads, Args &&... args) {
@@ -23,31 +23,31 @@ void LaunchParallelTest(int num_threads, Args &&... args) {
 }
 // must use const std::vector<int64_t>& keys, can't ignore the const keywords. Otherwise, this will be error at creating
 // thread;
-void InsertHelper(SkipList<GenericKey<8>, int64_t, GenericComparator<8>> *skiplist, const std::vector<int64_t> &keys,
+void InsertHelper(SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> *skiplist, const std::vector<int64_t> &keys,
                   __attribute__((unused)) int thread_iter = 0) {
   GenericKey<8> index_key;
   // GenericValue<8> index_value;
-  int64_t index_value;
+  GenericValue<8> index_value;
   for (auto key : keys) {
     index_key.SetFromInteger(key);
-    index_value = key;
+    index_value.SetFromInteger(key) ;
     skiplist->Insert(index_key, index_value);
   }
 }
-void InsertSplitHelper(SkipList<GenericKey<8>, int64_t, GenericComparator<8>> *skiplist,
+void InsertSplitHelper(SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> *skiplist,
                        const std::vector<int64_t> &keys, int thread_num, int thread_iter) {
   GenericKey<8> index_key;
-  int64_t index_value;
+  GenericValue<8> index_value;
   for (auto key : keys) {
     if (key % thread_num == thread_iter) {
       index_key.SetFromInteger(key);
-      index_value = key;
+      index_value.SetFromInteger(key);
       skiplist->Insert(index_key, index_value);
     }
   }
 }
 
-void DeleteHelper(SkipList<GenericKey<8>, int64_t, GenericComparator<8>> *skiplist, const std::vector<int64_t> &keys,
+void DeleteHelper(SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> *skiplist, const std::vector<int64_t> &keys,
                   __attribute__((unused)) int thread_iter = 0) {
   GenericKey<8> index_key;
   for (const auto &key : keys) {
@@ -56,7 +56,7 @@ void DeleteHelper(SkipList<GenericKey<8>, int64_t, GenericComparator<8>> *skipli
   }
 }
 
-void DeleteSplitHelper(SkipList<GenericKey<8>, int64_t, GenericComparator<8>> *skiplist,
+void DeleteSplitHelper(SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> *skiplist,
                        const std::vector<int64_t> &keys, int thread_num, int thread_iter) {
   GenericKey<8> index_key;
   for (auto key : keys) {
@@ -67,14 +67,14 @@ void DeleteSplitHelper(SkipList<GenericKey<8>, int64_t, GenericComparator<8>> *s
   }
 }
 
-void LookupHelper(SkipList<GenericKey<8>, int64_t, GenericComparator<8>> *skiplist, const std::vector<int64_t> &keys,
+void LookupHelper(SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> *skiplist, const std::vector<int64_t> &keys,
                   __attribute__((unused)) int thread_iter = 0) {
-  std::vector<int64_t> result;
   GenericKey<8> index_key;
-  int64_t index_value;
+  GenericValue<8> index_value;
+  std::vector<GenericValue<8>> result;
   for (const auto &key : keys) {
     index_key.SetFromInteger(key);
-    index_value = key;
+    index_value.SetFromInteger(key);
     result.clear();
     skiplist->Lookup(index_key, &result);
     EXPECT_EQ(result.size(), 1);
@@ -82,15 +82,15 @@ void LookupHelper(SkipList<GenericKey<8>, int64_t, GenericComparator<8>> *skipli
   }
 }
 
-void LookupSplitHelper(SkipList<GenericKey<8>, int64_t, GenericComparator<8>> *skiplist,
+void LookupSplitHelper(SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> *skiplist,
                        const std::vector<int64_t> &keys, int thread_num, int thread_iter) {
-  std::vector<int64_t> result;
   GenericKey<8> index_key;
-  int64_t index_value;
+  GenericValue<8> index_value;
+  std::vector<GenericValue<8>> result;
   for (auto key : keys) {
     if (key % thread_num == thread_iter) {
       index_key.SetFromInteger(key);
-      index_value = key;
+      index_value.SetFromInteger(key) ;
       skiplist->Lookup(index_key, &result);
       EXPECT_EQ(result.size(), 1);
       EXPECT_EQ(result[0], index_value);
@@ -105,7 +105,7 @@ TEST(SkipListTest, BasicTest) { EXPECT_EQ(1, 1); }
 TEST(SkipListTest, InsertTest1) {
   GenericComparator<8> comparator;
   int max_height = 18;
-  SkipList<GenericKey<8>, int64_t, GenericComparator<8>> skiplist(comparator, max_height);
+  SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> skiplist(comparator, max_height);
 
   int scala_keys = 100000;
   std::vector<int64_t> keys;
@@ -129,7 +129,7 @@ TEST(SkipListTest, InsertTest1) {
 TEST(SkipListTest, InsertTest2) {
   GenericComparator<8> comparator;
   int max_height = 18;
-  SkipList<GenericKey<8>, int64_t, GenericComparator<8>> skiplist(comparator, max_height);
+  SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> skiplist(comparator, max_height);
 
   int scala_keys = 100000;
   std::vector<int64_t> keys;
@@ -152,7 +152,7 @@ TEST(SkipListTest, InsertTest2) {
 TEST(SkipListTest, DeleteTest1) {
   GenericComparator<8> comparator;
   int max_height = 18;
-  SkipList<GenericKey<8>, int64_t, GenericComparator<8>> skiplist(comparator, max_height);
+  SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> skiplist(comparator, max_height);
 
   int scale_keys = 100000;
   std::vector<int64_t> keys;
@@ -170,7 +170,7 @@ TEST(SkipListTest, DeleteTest1) {
 TEST(SkipListTest, DeleteTest2) {
   GenericComparator<8> comparator;
   int max_height = 18;
-  SkipList<GenericKey<8>, int64_t, GenericComparator<8>> skiplist(comparator, max_height);
+  SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> skiplist(comparator, max_height);
 
   int scale_keys = 100000;
   std::vector<int64_t> keys;
@@ -189,7 +189,7 @@ TEST(SkipListTest, MixTest1) {
   for (int i = 0; i < ITER_NUM; i++) {
     GenericComparator<8> comparator;
     int max_height = 18;
-    SkipList<GenericKey<8>, int64_t, GenericComparator<8>> skiplist(comparator, max_height);
+    SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> skiplist(comparator, max_height);
 
     int scala_keys = 100000;
     std::vector<int64_t> for_insert;
@@ -232,7 +232,7 @@ TEST(SkipListTest, MixTest2) {
   for (int i = 0; i < ITER_NUM; i++) {
     GenericComparator<8> comparator;
     int max_height = 18;
-    SkipList<GenericKey<8>, int64_t, GenericComparator<8>> skiplist(comparator, max_height);
+    SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> skiplist(comparator, max_height);
 
     int scala_keys = 100000;
     std::vector<int64_t> perserved_keys;

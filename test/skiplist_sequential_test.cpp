@@ -8,9 +8,9 @@ namespace skiplist {
 TEST(SkipListTest, EmptyTest) {
   GenericComparator<8> comparator;
   int max_height = 5;
-  SkipList<GenericKey<8>, int64_t, GenericComparator<8>> skiplist(comparator, max_height);
+  SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> skiplist(comparator, max_height);
   EXPECT_EQ(skiplist.Size(), 0);
-  std::vector<int64_t> result;
+  std::vector<GenericValue<8>> result;
   GenericKey<8> index_key;
   index_key.SetFromInteger(0);
   EXPECT_EQ(false, skiplist.Lookup(index_key, &result));
@@ -20,10 +20,10 @@ TEST(SkipListTest, EmptyTest) {
 TEST(SkipListTest, InsertTest) {
   GenericComparator<8> comparator;
   int max_height = 12;  // This can store 2 ^ 12 keys
-  SkipList<GenericKey<8>, int64_t, GenericComparator<8>> skiplist(comparator, max_height);
+  SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> skiplist(comparator, max_height);
 
   GenericKey<8> index_key;
-  int64_t value;
+  GenericValue<8>  index_value;
   std::vector<int64_t> keys;
   int scala_keys = 1000;
   for (int i = 1; i <= scala_keys; i++) {
@@ -31,17 +31,17 @@ TEST(SkipListTest, InsertTest) {
   }
   for (auto &key : keys) {
     index_key.SetFromInteger(key);
-    value = key;
-    skiplist.Insert(index_key, value);
+    index_value.SetFromInteger(key);
+    skiplist.Insert(index_key, index_value);
   }
 
-  std::vector<int64_t> result;
+  std::vector<GenericValue<8>> result;
   for (auto key : keys) {
     index_key.SetFromInteger(key);
     result.clear();
     EXPECT_EQ(true, skiplist.Lookup(index_key, &result));
     EXPECT_EQ(result.size(), 1);
-    EXPECT_EQ(result[0], key);
+    EXPECT_EQ(result[0].ToInteger(), key);
   }
 
   int i = 0;
@@ -60,7 +60,7 @@ TEST(SkipListTest, InsertTest) {
 TEST(SkipListTest, DeleteTest1) {
   int max_height = 12;
   GenericComparator<8> comparator;
-  SkipList<GenericKey<8>, int64_t, GenericComparator<8>> skiplist(comparator, max_height);
+  SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> skiplist(comparator, max_height);
 
   int scale_keys = 1000;
   std::vector<int64_t> keys;
@@ -70,11 +70,11 @@ TEST(SkipListTest, DeleteTest1) {
 
   // Insert the keys to skiplist
   GenericKey<8> index_key;
-  int64_t value;
+  GenericValue<8> index_value;
   for (auto &key : keys) {
     index_key.SetFromInteger(key);
-    value = key;
-    skiplist.Insert(index_key, value);
+    index_value.SetFromInteger(key);
+    skiplist.Insert(index_key, index_value);
   }
 
   int i = 0;
@@ -95,7 +95,7 @@ TEST(SkipListTest, DeleteTest1) {
 TEST(SkipListTest, DeleteTest2) {
   int max_height = 12;
   GenericComparator<8> comparator;
-  SkipList<GenericKey<8>, int64_t, GenericComparator<8>> skiplist(comparator, max_height);
+  SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> skiplist(comparator, max_height);
 
   int scale_keys = 1000;
   std::vector<int64_t> keys;
@@ -105,11 +105,11 @@ TEST(SkipListTest, DeleteTest2) {
 
   // Insert the keys to skiplist
   GenericKey<8> index_key;
-  int64_t value;
+  GenericValue<8> index_value;
   for (auto &key : keys) {
     index_key.SetFromInteger(key);
-    value = key;
-    skiplist.Insert(index_key, value);
+    index_value.SetFromInteger(key);
+    skiplist.Insert(index_key, index_value);
   }
 
   int i = 0;
@@ -133,7 +133,7 @@ TEST(SkipListTest, DeleteTest2) {
 
   EXPECT_EQ(skiplist.Size(), keys.size() - for_delete.size());
 
-  std::vector<int64_t> result;
+  std::vector<GenericValue<8>> result;
   i = 0;
   for (auto iter = skiplist.begin(); iter != skiplist.end();) {
     index_key.SetFromInteger(keys[i]);
@@ -151,16 +151,16 @@ TEST(SkipListTest, MixTest1) {
   GenericComparator<8> comparator;
   int max_height = 12;
   GenericKey<8> index_key;
-  int64_t value;
-  SkipList<GenericKey<8>, int64_t, GenericComparator<8>> skiplist(comparator, max_height);
+  GenericValue<8> index_value;
+  SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> skiplist(comparator, max_height);
 
   int scale_keys = 1000;
   std::vector<int64_t> for_insert;
   std::vector<int64_t> for_delete;
   for (int i = 1; i <= scale_keys; i++) {
     index_key.SetFromInteger(i);
-    value = i;
-    skiplist.Insert(index_key, value);
+    index_value.SetFromInteger(i);
+    skiplist.Insert(index_key, index_value);
     if (i % 2 == 0) {
       for_insert.push_back(i);
     } else {
@@ -176,8 +176,8 @@ TEST(SkipListTest, MixTest1) {
 
   for (auto key : for_insert) {
     index_key.SetFromInteger(key);
-    value = key;
-    EXPECT_EQ(false, skiplist.Insert(index_key, value));
+    index_value.SetFromInteger(key);
+    EXPECT_EQ(false, skiplist.Insert(index_key, index_value));
   }
   EXPECT_EQ(skiplist.Size(), for_insert.size());
 

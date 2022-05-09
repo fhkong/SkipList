@@ -1,6 +1,5 @@
 #include <iostream>
 
-#include "generic_key.h"
 #include "gtest/gtest.h"
 #include "skiplist.h"
 
@@ -25,12 +24,13 @@ TEST(SkipListTest, PrintTest) {
   int max_height;
   int64_t key = 0;
   int64_t value = 0;
-  std::vector<int64_t> result;
   GenericKey<8> index_key;
+  GenericValue<8> index_value;
+  std::vector<GenericValue<8>> result;
   GenericComparator<8> comparator;
   std::cout << usageMessage();
   std::cin >> max_height;
-  SkipList<GenericKey<8>, int64_t, GenericComparator<8>> skiplist(comparator, max_height);
+  SkipList<GenericKey<8>, GenericValue<8>, GenericComparator<8>> skiplist(comparator, max_height);
 
   std::string file_name;
 
@@ -58,7 +58,8 @@ TEST(SkipListTest, PrintTest) {
       case 'i':
         std::cin >> key >> value;
         index_key.SetFromInteger(key);
-        skiplist.Insert(index_key, value);
+        index_value.SetFromInteger(key);
+        skiplist.Insert(index_key, index_value);
         break;
       case 'f':
         std::cin >> file_name;
