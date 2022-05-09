@@ -60,7 +60,8 @@ bool SKIPLIST_TYPE::Insert(const KeyType &key, const ValueType &value) {
   }
 
   size_t height = RandomHeight();
-  LOG_INFO("ThreadID: %lu, Insert: <%ld, %ld> with height: %lu", std::hash<std::thread::id>{}(std::this_thread::get_id()), key.ToInteger(), value, height);
+  LOG_INFO("ThreadID: %lu, Insert: <%ld, %ld> with height: %lu",
+           std::hash<std::thread::id>{}(std::this_thread::get_id()), key.ToInteger(), value, height);
   SkipListNode *new_node = new SkipListNode(key, value, height);
 
   level = max_height_ - 1;
